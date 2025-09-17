@@ -50,7 +50,7 @@ public class ProjectController {
     @GetMapping(BASE_PATH_V1)
     public Page<ProjectResponse> getAllProjects(
             @RequestParam(value = "status", required = false) ProjectStatus status,
-            @PageableDefault(size = 20, sort = {"created_at"}, direction = Sort.Direction.DESC)  Pageable pageable
+            @PageableDefault(size = 20, sort = {"createdAt"}, direction = Sort.Direction.DESC)  Pageable pageable
     ){
         return projectService.findAllByStatus(status, pageable);
     }

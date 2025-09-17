@@ -19,6 +19,7 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
     @Query(value = "DELETE FROM project_category pc WHERE pc.categories_id = :categoryId", nativeQuery = true)
     void deleteCategoryFromProjects(@Param("categoryId") Long categoryId);
 
-    Page<Project> findAllByStatus(ProjectStatus status, Pageable pageable);
+    @Query("SELECT p FROM Project p WHERE (:status IS NULL OR p.status = :status)")
+    Page<Project> findAllByStatus(@Param("status") ProjectStatus status, Pageable pageable);
 
 }
