@@ -26,4 +26,6 @@ public class ProjectRequest {
 
     private BigDecimal price;
 
+    private ProjectStatus status;
+
 }

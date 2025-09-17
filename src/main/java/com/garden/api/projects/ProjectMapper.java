@@ -27,6 +27,11 @@ public class ProjectMapper {
         project.setStatus(ProjectStatus.Scheduled);
         project.setPrice(request.getPrice());
 
+        if(request.getStatus() != null) {
+            project.setStatus(request.getStatus());
+        }else{
+            project.setStatus(ProjectStatus.Scheduled);
+        }
         List<Category> categories = mapCategoriesByIds(request.getCategoryIds());
         project.setCategories(categories);
     }
