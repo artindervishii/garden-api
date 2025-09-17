@@ -55,7 +55,8 @@ public class SecurityConfiguration {
 
         configuration.setAllowedOrigins(List.of(
                 "http://localhost:3000",
-                "https://garden.com"
+                "http://localhost:8080",
+                "http://localhost:8081"
         ));
         configuration.setAllowedMethods(List.of("OPTIONS", "GET", "POST", "PUT", "DELETE"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
