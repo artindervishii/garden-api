@@ -2,7 +2,6 @@ package com.garden.api.user;
 
 
 import com.garden.api.email.EmailDetails;
-import com.garden.api.email.EmailService;
 import com.garden.api.exceptions.ResourceNotFoundException;
 import com.garden.api.exceptions.UserException;
 import com.garden.api.role.RoleEnum;
@@ -26,7 +25,6 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
-    private final EmailService emailService;
     private final CurrentUserService currentUserService;
     private final EmailDetails emailDetails;
 
@@ -64,7 +62,7 @@ public class UserService {
         user.setResetPasswordToken(resetToken);
         userRepository.save(user);
 
-        emailService.sendForgotPasswordEmail(user);
+//        emailService.sendForgotPasswordEmail(user);
 
     }
 
@@ -111,7 +109,7 @@ public class UserService {
                     "Faleminderit që përdorni Jomuntu!\n\n" +
                     "Me respekt,\n" +
                     "Ekipi Jomuntu");
-            emailService.send(emailDetails);
+//            emailService.send(emailDetails);
         } catch (RuntimeException e) {
             throw new UserException(e.getMessage());
         } catch (Exception e) {

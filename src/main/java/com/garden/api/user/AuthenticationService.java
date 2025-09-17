@@ -1,6 +1,5 @@
 package com.garden.api.user;
 
-import com.garden.api.email.EmailService;
 import com.garden.api.exceptions.ResourceNotFoundException;
 import com.garden.api.role.Role;
 import com.garden.api.role.RoleRepository;
@@ -31,7 +30,6 @@ public class AuthenticationService {
 
     private final AuthenticationManager authenticationManager;
 
-    private final EmailService emailService;
 
     @Transactional
     public Optional<User> signup(CreateUserRequest input) {
@@ -49,7 +47,7 @@ public class AuthenticationService {
         user.setProvider("Basic");
 
         userRepository.save(user);
-        emailService.sendVerificationEmail(user);
+//        emailService.sendVerificationEmail(user);
 
         return Optional.of(user);
     }
