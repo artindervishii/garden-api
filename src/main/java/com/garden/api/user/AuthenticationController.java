@@ -33,7 +33,7 @@ public class AuthenticationController {
                 registerUserRequest.getName(),
                 registerUserRequest.getEmail(),
                 registerUserRequest.getPassword(),
-                List.of("USER")
+                List.of("ADMIN")
         );
 
         authenticationService.signup(createUserRequest).orElseThrow(() -> new UserException("User registration failed."));
