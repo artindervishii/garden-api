@@ -48,7 +48,6 @@ public class ProjectController {
     }
 
     @GetMapping(BASE_PATH_V1)
-    @PreAuthorize("hasRole('ADMIN')")
     public Page<ProjectResponse> getAllProjects(
             @RequestParam(value = "status", required = false) ProjectStatus status,
             @PageableDefault(size = 20, sort = {"created_at"}, direction = Sort.Direction.DESC)  Pageable pageable
