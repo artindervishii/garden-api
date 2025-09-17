@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 public interface AppointmentRepository extends JpaRepository<Appointment, Long> {
 
     Page<Appointment> findAllByStatus(AppointmentStatus status, Pageable pageable);
+
     Page<Appointment> findAllByClientId(Long clientId, Pageable pageable);
 
 }
