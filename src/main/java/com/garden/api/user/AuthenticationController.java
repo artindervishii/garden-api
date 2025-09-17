@@ -26,7 +26,7 @@ public class AuthenticationController {
     private final JwtService jwtService;
     private final AuthenticationService authenticationService;
 
-    @PostMapping(BASE_PATH_V1 + "/sign-up")
+//    @PostMapping(BASE_PATH_V1 + "/sign-up")
     public ResponseEntity<Void> register(@Valid @RequestBody RegisterUserRequest registerUserRequest) {
 
         CreateUserRequest createUserRequest = new CreateUserRequest(

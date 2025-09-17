@@ -21,13 +21,13 @@ import java.util.stream.Collectors;
 @Service
 public class JwtService {
 
-    @Value("3cfa76ef14937c1c0ea519f8fc057a80fcd04a7420f8e8bcd0a7567c272e007b")
+    @Value("${security.jwt.secret-key}")
     private String secretKey;
 
-    @Value("360000000000000000")
+    @Value("${security.jwt.expiration-time}")
     private long jwtExpiration;
 
-    @Value("86400000")
+    @Value("${security.jwt.refresh-expiration-time}")
     private long refreshExpirationDateInMs;
 
     public String extractUsername(String token) {
