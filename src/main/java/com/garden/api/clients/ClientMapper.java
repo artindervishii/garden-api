@@ -1,17 +1,16 @@
 package com.garden.api.clients;
 
-import com.garden.api.projects.Project;
-import com.garden.api.projects.ProjectRepository;
+import com.garden.api.projects.ProjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.util.stream.Collectors;
+import java.time.LocalDate;
 
 @Component
 @RequiredArgsConstructor
 public class ClientMapper {
 
-    private final ProjectRepository projectRepository;
+    private final ProjectMapper projectMapper;
 
     public Client toEntity(ClientRequest request) {
         Client client = new Client();
@@ -19,15 +18,8 @@ public class ClientMapper {
         client.setAddress(request.getAddress());
         client.setEmail(request.getEmail());
         client.setPhoneNumber(request.getPhoneNumber());
-        client.setStatus(request.getStatus());
-        client.setTotalSpent(request.getTotalSpent());
-        client.setLastContactDate(request.getLastContactDate());
-        if (request.getProjectIds() != null) {
-            client.setProjects(request.getProjectIds()
-                    .stream()
-                    .map(id -> projectRepository.findById(id).orElse(null))
-                    .collect(Collectors.toList()));
-        }
+        client.setStatus(ClientStatus.ACTIVE);
+        client.setLastContactDate(LocalDate.now());
         return client;
     }
 
@@ -42,10 +34,11 @@ public class ClientMapper {
         response.setTotalSpent(client.getTotalSpent());
         response.setLastContactDate(client.getLastContactDate());
         if (client.getProjects() != null) {
-            response.setProjectTitles(client.getProjects()
-                    .stream()
-                    .map(Project::getTitle)
-                    .collect(Collectors.toList()));
+            response.setProjects(
+                    client.getProjects().stream()
+                            .map(projectMapper::mapToProjectResponse)
+                            .toList()
+            );
         }
         return response;
     }
@@ -56,13 +49,6 @@ public class ClientMapper {
         client.setEmail(request.getEmail());
         client.setPhoneNumber(request.getPhoneNumber());
         client.setStatus(request.getStatus());
-        client.setTotalSpent(request.getTotalSpent());
         client.setLastContactDate(request.getLastContactDate());
-        if (request.getProjectIds() != null) {
-            client.setProjects(request.getProjectIds()
-                    .stream()
-                    .map(id -> projectRepository.findById(id).orElse(null))
-                    .collect(Collectors.toList()));
-        }
     }
 }

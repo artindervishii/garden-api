@@ -1,21 +1,18 @@
 package com.garden.api.category;
 
-import com.garden.api.exceptions.ResourceNotFoundException;
-import lombok.AllArgsConstructor;
+import com.garden.api.projects.ProjectResponse;
 import org.springframework.stereotype.Component;
 
-import java.util.Set;
 import java.util.stream.Collectors;
 
-@AllArgsConstructor
 @Component
 public class CategoryMapper {
 
-    private CategoryRepository categoryRepository;
-
-    public Category mapToCategory(CategoryRequest categoryRequest) {
+    public Category mapToCategory(CategoryRequest request) {
         Category category = new Category();
-        category.setName(categoryRequest.getName());
+        category.setName(request.getName());
+        category.setDescription(request.getDescription());
+        category.setImageUrl(request.getImageUrl());
         return category;
     }
 
@@ -23,16 +20,16 @@ public class CategoryMapper {
         return CategoryResponse.builder()
                 .id(category.getId())
                 .name(category.getName())
+                .description(category.getDescription())
+                .imageUrl(category.getImageUrl())
+                .projects(category.getProjects() != null ?
+                        category.getProjects().stream().map(p -> ProjectResponse.builder()
+                                .id(p.getId())
+                                .title(p.getTitle())
+                                .images(p.getImages())
+                                .description(p.getDescription())
+                                .build()).collect(Collectors.toList())
+                        : null)
                 .build();
     }
-
-    public Set<Category> mapCategoryIdsToCategories(Set<Long> categoryIds) {
-        return categoryIds.stream().map(this::findCategoryById).collect(Collectors.toSet());
-    }
-
-    private Category findCategoryById(Long categoryId) {
-        return categoryRepository.findById(categoryId).orElseThrow(() -> new ResourceNotFoundException("Category not found with ID: " + categoryId));
-    }
-
-
 }

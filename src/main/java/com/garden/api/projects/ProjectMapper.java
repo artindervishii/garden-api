@@ -2,6 +2,7 @@ package com.garden.api.projects;
 
 import com.garden.api.category.Category;
 import com.garden.api.category.CategoryRepository;
+import com.garden.api.clients.ClientRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -13,6 +14,7 @@ import java.util.stream.Collectors;
 public class ProjectMapper {
 
     private final CategoryRepository categoryRepository;
+    private final ClientRepository clientRepository;
 
     public Project map(ProjectRequest request) {
         Project project = new Project();
@@ -21,17 +23,13 @@ public class ProjectMapper {
     }
 
     public void map(Project project, ProjectRequest request) {
-        project.setTitle(request.getTitle());
-        project.setImage(request.getImage());
-        project.setDescription(request.getDescription());
-        project.setStatus(ProjectStatus.Scheduled);
-        project.setPrice(request.getPrice());
-
-        if(request.getStatus() != null) {
-            project.setStatus(request.getStatus());
-        }else{
-            project.setStatus(ProjectStatus.Scheduled);
+        if(request.getClientId() != null) {
+            clientRepository.findById(request.getClientId()).ifPresent(project::setClient);
         }
+        project.setTitle(request.getTitle());
+        project.setDescription(request.getDescription());
+        project.setPrice(request.getPrice());
+        project.setStatus(request.getStatus());
         List<Category> categories = mapCategoriesByIds(request.getCategoryIds());
         project.setCategories(categories);
     }
@@ -52,9 +50,13 @@ public class ProjectMapper {
         return ProjectResponse.builder()
                 .id(project.getId())
                 .title(project.getTitle())
-                .image(project.getImage())
+                .images(project.getImages())
+                .videos(project.getVideos())
                 .description(project.getDescription())
                 .categoriesName(mapToCategories(project.getCategories()))
+                .clientName(project.getClient() != null ? project.getClient().getName() : null)
+                .price(project.getPrice())
+                .status(project.getStatus())
                 .build();
     }
 

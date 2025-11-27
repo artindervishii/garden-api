@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @AllArgsConstructor
 @RestController
@@ -54,4 +55,30 @@ public class ProjectController {
     ){
         return projectService.findAllByStatus(status, pageable);
     }
+
+    @GetMapping(BASE_PATH_V1 + "/category/{categoryId}")
+    public Page<ProjectResponse> getProjectsByCategory(
+            @PathVariable Long categoryId,
+            @PageableDefault(size = 20, sort = {"createdAt"}, direction = Sort.Direction.DESC) Pageable pageable
+    ) {
+        return projectService.findProjectsByCategory(categoryId, pageable);
+    }
+
+    @PostMapping(BASE_PATH_V1 + "/{projectId}/upload-image")
+    public ResponseEntity<String> uploadProjectImage(
+            @PathVariable Long projectId,
+            @RequestParam("file") MultipartFile file) {
+        String url = projectService.uploadProjectImage(projectId, file);
+        return ResponseEntity.ok(url);
+    }
+
+
+    @PostMapping(BASE_PATH_V1 + "/{projectId}/upload-video")
+    public ResponseEntity<String> uploadProjectVideo(
+            @PathVariable Long projectId,
+            @RequestParam("file") MultipartFile file) {
+        String url = projectService.uploadProjectVideo(projectId, file);
+        return ResponseEntity.ok(url);
+    }
+
 }

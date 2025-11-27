@@ -18,14 +18,16 @@ public class ProjectRequest {
     @NotEmpty(message = "At least one category ID is required")
     private List<Long> categoryIds;
 
-    @Column(nullable = false)
-    private String image;
+    private List<String> images;
+
+    private List<String> videos;
 
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    private BigDecimal price;
+    private Long clientId;
 
     private ProjectStatus status;
 
+    private BigDecimal price;
 }

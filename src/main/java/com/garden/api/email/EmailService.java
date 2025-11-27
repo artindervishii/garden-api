@@ -1,5 +1,8 @@
 package com.garden.api.email;
 
+import com.garden.api.category.Category;
+import com.garden.api.category.CategoryRepository;
+import com.garden.api.reviews.Review;
 import com.garden.api.user.User;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -16,6 +19,7 @@ import org.springframework.stereotype.Service;
 public class EmailService {
 
     private final JavaMailSenderImpl mailSender;
+    private final CategoryRepository categoryRepository;
 
 
     public void send(EmailDetails emailDetails) {
@@ -53,10 +57,13 @@ public class EmailService {
         mailSender.send(mimeMessage);
     }
 
-    public void sendContactFormEmail(String name, String email, String phone, String service, String messageContent) {
+    public void sendContactFormEmail(String name, String email, String phone, String categoryId, String messageContent) {
         try {
             MimeMessage mimeMessage = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+
+            Category category = categoryRepository.findById(Long.parseLong(categoryId)).orElse(null);
+
 
             String subject = String.format("New Contact Form Submission from %s", name);
 
@@ -75,12 +82,12 @@ public class EmailService {
                     name != null ? name : "N/A",
                     email != null ? email : "N/A",
                     (phone != null && !phone.isEmpty()) ? phone : "N/A",
-                    service != null ? service : "N/A",
+                    category.getName() != null ? category.getName() : "N/A",
                     messageContent != null ? messageContent : "N/A"
             );
 
             helper.setFrom("no-reply@er-de.de");
-            helper.setTo("artini88@outlook.com");
+            helper.setTo("fidi_der@hotmail.com");
             helper.setSubject(subject);
             helper.setText(htmlContent, true);
 
@@ -92,5 +99,50 @@ public class EmailService {
             e.printStackTrace();
         }
     }
+
+
+    public void sendReviewEmail(Review review) {
+        try {
+            MimeMessage mimeMessage = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+
+            String subject = "New Review Submitted";
+
+            String htmlContent = """
+            <html>
+            <body style="font-family: Arial, sans-serif; line-height: 1.6;">
+                <h2 style="color: #2E86C1;">New Review Received</h2>
+                <p><strong>Full Name:</strong> %s</p>
+                <p><strong>Location:</strong> %s</p>
+                <p><strong>Email:</strong> %s</p>
+                <p><strong>Stars:</strong> %d</p>
+                <p><strong>Category:</strong> %s</p>
+                <p><strong>Description:</strong><br/>%s</p>
+            </body>
+            </html>
+            """.formatted(
+                    review.getFullName(),
+                    review.getLocation(),
+                    review.getEmail() != null ? review.getEmail() : "N/A",
+                    review.getStars(),
+                    review.getCategory().getName(),
+                    review.getDescription()
+            );
+
+            helper.setFrom("no-reply@er-de.de");
+            helper.setTo("fidi_der@hotmail.com");
+            helper.setSubject(subject);
+            helper.setText(htmlContent, true);
+
+            mailSender.send(mimeMessage);
+
+            System.out.println("Review email sent successfully.");
+
+        } catch (Exception e) {
+            System.err.println("Failed to send review email: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
 
 }

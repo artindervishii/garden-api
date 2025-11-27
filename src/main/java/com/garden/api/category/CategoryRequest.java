@@ -8,4 +8,6 @@ public class CategoryRequest {
 
     @NotBlank(message = "Category name cannot be blank")
     String name;
+    String description;
+    String imageUrl;
 }

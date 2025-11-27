@@ -1,7 +1,7 @@
 package com.garden.api.appointments;
 
-import com.garden.api.clients.Client;
-import com.garden.api.clients.ClientRepository;
+import com.garden.api.category.Category;
+import com.garden.api.category.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -9,20 +9,17 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class AppointmentMapper {
 
-    private final ClientRepository clientRepository;
+    private final CategoryRepository categoryRepository;
 
     public Appointment toEntity(AppointmentRequest request) {
         Appointment appointment = new Appointment();
 
-        Client client = clientRepository.findById(request.getClientId())
-                .orElseThrow(() -> new RuntimeException("Client not found with ID: " + request.getClientId()));
-
-        appointment.setClient(client);
-        appointment.setServiceType(request.getServiceType());
-        appointment.setDate(request.getDate());
-        appointment.setTime(request.getTime());
+        Category category = categoryRepository.findById(request.getCategoryId()).orElseThrow(() -> new RuntimeException("Category not found with ID: " + request.getCategoryId()));
+        appointment.setCategory(category);
+        appointment.setClientName(request.getClientName());
+        appointment.setClientPhoneNumber(request.getClientPhoneNumber());
+        appointment.setDateTime(request.getDateTime());
         appointment.setAddress(request.getAddress());
-        appointment.setAssignedStaff(request.getAssignedStaff());
         appointment.setStatus(request.getStatus() != null ? request.getStatus() : AppointmentStatus.SCHEDULED);
 
         return appointment;
@@ -31,28 +28,28 @@ public class AppointmentMapper {
     public AppointmentResponse toResponse(Appointment appointment) {
         AppointmentResponse response = new AppointmentResponse();
         response.setId(appointment.getId());
-        response.setClientId(appointment.getClient().getId());
-        response.setClientName(appointment.getClient().getName());
-        response.setServiceType(appointment.getServiceType());
-        response.setDate(appointment.getDate());
-        response.setTime(appointment.getTime());
+        response.setClientName(appointment.getClientName());
+        response.setClientPhoneNumber(appointment.getClientPhoneNumber());
+        if(appointment.getCategory() != null){
+            response.setCategoryId(appointment.getCategory().getId());
+        }
+        response.setDateTime(appointment.getDateTime());
         response.setAddress(appointment.getAddress());
-        response.setAssignedStaff(appointment.getAssignedStaff());
         response.setStatus(appointment.getStatus());
         return response;
     }
 
     public void updateEntity(Appointment appointment, AppointmentRequest request) {
-        if (request.getClientId() != null) {
-            Client client = clientRepository.findById(request.getClientId())
-                    .orElseThrow(() -> new RuntimeException("Client not found with ID: " + request.getClientId()));
-            appointment.setClient(client);
+
+        if (request.getCategoryId() != null) {
+            Category category = categoryRepository.findById(request.getCategoryId())
+                    .orElseThrow(() -> new RuntimeException("Category not found with ID: " + request.getCategoryId()));
+            appointment.setCategory(category);
         }
-        appointment.setServiceType(request.getServiceType());
-        appointment.setDate(request.getDate());
-        appointment.setTime(request.getTime());
+        appointment.setClientName(request.getClientName());
+        appointment.setClientPhoneNumber(request.getClientPhoneNumber());
+        appointment.setDateTime(request.getDateTime());
         appointment.setAddress(request.getAddress());
-        appointment.setAssignedStaff(request.getAssignedStaff());
         appointment.setStatus(request.getStatus());
     }
 }

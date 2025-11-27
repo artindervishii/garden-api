@@ -2,9 +2,7 @@ package com.garden.api.clients;
 
 import lombok.Data;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.List;
 
 @Data
 public class ClientRequest {
@@ -13,7 +11,5 @@ public class ClientRequest {
     private String email;
     private String phoneNumber;
     private ClientStatus status;
-    private BigDecimal totalSpent;
     private LocalDate lastContactDate;
-    private List<Long> projectIds;
 }

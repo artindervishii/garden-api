@@ -22,4 +22,5 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
     @Query("SELECT p FROM Project p WHERE (:status IS NULL OR p.status = :status)")
     Page<Project> findAllByStatus(@Param("status") ProjectStatus status, Pageable pageable);
 
+    Page<Project> findByCategories_Id(Long categoryId, Pageable pageable);
 }

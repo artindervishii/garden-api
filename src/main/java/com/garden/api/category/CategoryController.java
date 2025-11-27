@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -22,9 +23,9 @@ public class CategoryController {
 
     @PostMapping(BASE_PATH_V1)
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> createCategory(@Valid @RequestBody CategoryRequest categoryRequest) {
-        categoryService.createCategory(categoryRequest);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+    public ResponseEntity<Long> createCategory(@Valid @RequestBody CategoryRequest categoryRequest) {
+        Long categoryId = categoryService.createCategory(categoryRequest);
+        return new ResponseEntity<>(categoryId,HttpStatus.CREATED);
     }
 
     @GetMapping(BASE_PATH_V1)
@@ -57,5 +58,14 @@ public class CategoryController {
         List<Category> categories = categoryService.getCategoriesByName(name);
         return ResponseEntity.ok(categories);
     }
+
+    @PostMapping(BASE_PATH_V1 + "/{categoryId}/upload-image")
+    public ResponseEntity<String> uploadCategoryImage(
+            @PathVariable Long categoryId,
+            @RequestParam("file") MultipartFile file) {
+        String url = categoryService.uploadCategoryImage(categoryId, file);
+        return ResponseEntity.ok(url);
+    }
+
 
 }

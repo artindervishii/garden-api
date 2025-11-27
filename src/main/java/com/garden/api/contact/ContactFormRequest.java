@@ -8,7 +8,7 @@ public class ContactFormRequest {
     String name;
     String email;
     String phone;
-    String service;
+    String categoryId;
     String message;
 
 }

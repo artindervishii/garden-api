@@ -32,10 +32,7 @@ public class Client extends AbstractEntity {
     @Column(nullable = false)
     private ClientStatus status = ClientStatus.ACTIVE;
 
-    @ManyToMany
-    @JoinTable(name = "client_project",
-            joinColumns = @JoinColumn(name = "client_id"),
-            inverseJoinColumns = @JoinColumn(name = "project_id"))
+    @OneToMany(mappedBy = "client")
     @BatchSize(size = 50)
     private List<Project> projects = new ArrayList<>();
 

@@ -23,7 +23,7 @@ public class ContactFormController {
                 request.getName(),
                 request.getEmail(),
                 request.getPhone(),
-                request.getService(),
+                request.getCategoryId(),
                 request.getMessage()
         );
         return ResponseEntity.ok("Form submitted successfully");

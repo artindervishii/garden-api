@@ -50,17 +50,9 @@ public class AppointmentController {
     @PreAuthorize("hasRole('ADMIN')")
     public Page<AppointmentResponse> getAllAppointments(
             @RequestParam(value = "status", required = false) AppointmentStatus status,
-            @PageableDefault(size = 20, sort = {"date", "time"}, direction = Sort.Direction.ASC) Pageable pageable
+            @PageableDefault(size = 20, sort = {"dateTime"}, direction = Sort.Direction.ASC) Pageable pageable
     ){
         return service.findAllByStatus(status, pageable);
     }
 
-    @GetMapping("/client/{clientId}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public Page<AppointmentResponse> getAppointmentsByClient(
-            @PathVariable Long clientId,
-            @PageableDefault(size = 20, sort = {"date", "time"}, direction = Sort.Direction.ASC) Pageable pageable
-    ) {
-        return service.findAllByClientId(clientId, pageable);
-    }
 }

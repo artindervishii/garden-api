@@ -104,11 +104,9 @@ public class UserService {
             emailDetails.setTo(currentUser.getEmail());
             emailDetails.setSubject("Fjalëkalimi juaj është ndryshuar");
             emailDetails.setText("I nderuar klient,\n\n" +
-                    "Ky është një njoftim që fjalëkalimi i llogarisë suaj në Jomuntu është ndryshuar me sukses. Nëse e keni bërë këtë ndryshim, nuk ka nevojë për veprime të mëtejshme.\n\n" +
-                    "Nëse nuk keni kërkuar ndryshimin e fjalëkalimit, ju lutemi të kontaktoni menjëherë ekipin tonë në jomuntu@gmail.com për të siguruar llogarinë tuaj.\n\n" +
-                    "Faleminderit që përdorni Jomuntu!\n\n" +
+                    "Ky është një njoftim që fjalëkalimi i llogarisë suaj në ER-DE është ndryshuar me sukses. \n\n" +
                     "Me respekt,\n" +
-                    "Ekipi Jomuntu");
+                    "Ekipi ER-DE");
 //            emailService.send(emailDetails);
         } catch (RuntimeException e) {
             throw new UserException(e.getMessage());

@@ -49,8 +49,4 @@ public class AppointmentService {
         return appointments.map(mapper::toResponse);
     }
 
-    public Page<AppointmentResponse> findAllByClientId(Long clientId, Pageable pageable) {
-        Page<Appointment> appointments = repository.findAllByClientId(clientId, pageable);
-        return appointments.map(mapper::toResponse);
-    }
 }

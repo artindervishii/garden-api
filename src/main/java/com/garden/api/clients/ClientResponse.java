@@ -1,5 +1,6 @@
 package com.garden.api.clients;
 
+import com.garden.api.projects.ProjectResponse;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -16,5 +17,5 @@ public class ClientResponse {
     private ClientStatus status;
     private BigDecimal totalSpent;
     private LocalDate lastContactDate;
-    private List<String> projectTitles;
+    private List<ProjectResponse> projects;
 }

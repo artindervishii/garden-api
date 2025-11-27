@@ -37,6 +37,7 @@ public class SecurityConfiguration {
                         .requestMatchers("/api/users/change-password").permitAll()
                         .requestMatchers("/api/oauth2/**").permitAll()
                         .requestMatchers("/api/**").permitAll()
+                        .requestMatchers("/images/**", "/videos/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
@@ -56,7 +57,9 @@ public class SecurityConfiguration {
         configuration.setAllowedOrigins(List.of(
                 "http://localhost:3000",
                 "http://localhost:8080",
-                "http://localhost:8081"
+                "http://localhost:8082",
+                "https://www.garten-er.de",
+                "http://www.garten-er.de"
         ));
         configuration.setAllowedMethods(List.of("OPTIONS", "GET", "POST", "PUT", "DELETE"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
