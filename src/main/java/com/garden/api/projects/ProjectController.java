@@ -12,6 +12,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @AllArgsConstructor
 @RestController
 @RequestMapping("/api")
@@ -20,6 +23,7 @@ public class ProjectController {
     public static final String BASE_PATH_V1 = "/v1/projects";
 
     private final ProjectService projectService;
+    private final ProjectMapper mapper;
 
     @PostMapping(value = BASE_PATH_V1)
     @PreAuthorize("hasRole('ADMIN')")
@@ -79,6 +83,41 @@ public class ProjectController {
             @RequestParam("file") MultipartFile file) {
         String url = projectService.uploadProjectVideo(projectId, file);
         return ResponseEntity.ok(url);
+    }
+
+    @DeleteMapping(BASE_PATH_V1 + "/{projectId}/images")
+    public ResponseEntity<?> deleteProjectImage(
+            @PathVariable Long projectId,
+            @RequestParam("url") String imageUrl) {
+        projectService.deleteProjectImage(projectId, imageUrl);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping(BASE_PATH_V1 + "/{projectId}/videos")
+    public ResponseEntity<?> deleteProjectVideo(
+            @PathVariable Long projectId,
+            @RequestParam("url") String videoUrl) {
+        projectService.deleteProjectVideo(projectId, videoUrl);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping(BASE_PATH_V1 + "/featured")
+    public List<ProjectResponse> getFeaturedProjects() {
+        List<Project> featuredProjects = projectService.findFeaturedProjects();
+        return featuredProjects.stream()
+                .map(mapper::mapToProjectResponse)
+                .collect(Collectors.toList());
+    }
+
+
+    @PutMapping(BASE_PATH_V1 + "/featured/order")
+    public ResponseEntity<?> updateFeaturedProjectsOrder(@RequestBody List<Long> projectIds) {
+        try {
+            projectService.updateFeaturedProjectsOrder(projectIds);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Failed to update order: " + e.getMessage());
+        }
     }
 
 }

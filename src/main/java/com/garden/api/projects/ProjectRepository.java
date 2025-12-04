@@ -9,6 +9,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Repository
 public interface ProjectRepository extends JpaRepository<Project, Long> {
 
@@ -23,4 +25,8 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
     Page<Project> findAllByStatus(@Param("status") ProjectStatus status, Pageable pageable);
 
     Page<Project> findByCategories_Id(Long categoryId, Pageable pageable);
+
+    List<Project> findByDisplayOrderIsNotNullOrderByDisplayOrderAsc();
+
+    List<Project> findByStatusAndDisplayOrderIsNotNullOrderByDisplayOrderAsc(ProjectStatus status);
 }

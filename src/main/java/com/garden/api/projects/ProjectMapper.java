@@ -57,6 +57,7 @@ public class ProjectMapper {
                 .clientName(project.getClient() != null ? project.getClient().getName() : null)
                 .price(project.getPrice())
                 .status(project.getStatus())
+                .displayOrder(project.getDisplayOrder())
                 .build();
     }
 

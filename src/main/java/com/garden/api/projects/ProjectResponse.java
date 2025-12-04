@@ -19,4 +19,5 @@ public class ProjectResponse {
     String clientName;
     BigDecimal price;
     ProjectStatus status;
+    Integer displayOrder;
 }

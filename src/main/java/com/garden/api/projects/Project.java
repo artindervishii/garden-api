@@ -49,4 +49,7 @@ public class Project extends AbstractEntity {
 
     private BigDecimal price;
 
+    @Column(nullable = true)
+    private Integer displayOrder;
+
 }

@@ -3,6 +3,7 @@ package com.garden.api.projects;
 import com.garden.api.clients.Client;
 import com.garden.api.clients.ClientService;
 import com.garden.api.exceptions.ResourceNotFoundException;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -12,8 +13,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @Service
@@ -136,5 +140,70 @@ public class ProjectService {
         }
     }
 
+    @Transactional
+    public void deleteProjectImage(Long projectId, String imageUrl) {
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new ResourceNotFoundException("Project with ID " + projectId + " not found"));
+        project.getImages().removeIf(url -> url.equals(imageUrl));
+        projectRepository.save(project);
+
+        try {
+            String filename = imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
+            String uploadDir = System.getProperty("user.dir") + "/uploads/projects/images/";
+            Path filePath = Paths.get(uploadDir + filename);
+
+            if (Files.exists(filePath)) {
+                Files.delete(filePath);
+                System.out.println("Deleted file: " + filePath.toAbsolutePath());
+            }
+        } catch (IOException e) {
+            System.err.println("Failed to delete image file: " + e.getMessage());
+        }
+    }
+
+    @Transactional
+    public void deleteProjectVideo(Long projectId, String videoUrl) {
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new ResourceNotFoundException("Project with ID " + projectId + " not found"));
+        project.getVideos().removeIf(url -> url.equals(videoUrl));
+        projectRepository.save(project);
+
+        try {
+            String filename = videoUrl.substring(videoUrl.lastIndexOf("/") + 1);
+            String uploadDir = System.getProperty("user.dir") + "/uploads/projects/videos/";
+            Path filePath = Paths.get(uploadDir + filename);
+
+            if (Files.exists(filePath)) {
+                Files.delete(filePath);
+                System.out.println("Deleted file: " + filePath.toAbsolutePath());
+            }
+        } catch (IOException e) {
+            System.err.println("Failed to delete video file: " + e.getMessage());
+        }
+    }
+
+    public List<Project> findFeaturedProjects() {
+        return projectRepository.findByStatusAndDisplayOrderIsNotNullOrderByDisplayOrderAsc(ProjectStatus.Completed);
+    }
+
+    @Transactional
+    public void updateFeaturedProjectsOrder(List<Long> projectIds) {
+        List<Project> allProjects = projectRepository.findAll();
+        for (Project project : allProjects) {
+            project.setDisplayOrder(null);
+        }
+        projectRepository.saveAll(allProjects);
+
+        int maxFeatured = Math.min(projectIds.size(), 8);
+        for (int i = 0; i < maxFeatured; i++) {
+            Long projectId = projectIds.get(i);
+            Project project = projectRepository.findById(projectId)
+                    .orElseThrow(() -> new EntityNotFoundException("Project not found: " + projectId));
+            project.setDisplayOrder(i + 1);
+        }
+        projectRepository.saveAll(allProjects.stream()
+                .filter(p -> p.getDisplayOrder() != null)
+                .collect(Collectors.toList()));
+    }
 
 }
