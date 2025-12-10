@@ -82,7 +82,7 @@ public class CategoryService {
     @Transactional
     public String uploadCategoryImage(Long categoryId, MultipartFile file) {
 
-        String baseUrl = "http://localhost:8082";
+        String baseUrl = "https://api.garten-er.de";
 
         Optional<Category> categoryOpt = categoryRepository.findById(categoryId);
         if (categoryOpt.isEmpty()) {

@@ -82,7 +82,7 @@ public class ProjectService {
     @Transactional
     public String uploadProjectImage(Long projectId, MultipartFile file) {
 
-        String baseUrl = "http://localhost:8082";
+        String baseUrl = "https://api.garten-er.de";
 
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new ResourceNotFoundException("Project with ID " + projectId + " not found"));
