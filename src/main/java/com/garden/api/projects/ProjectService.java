@@ -92,7 +92,7 @@ public class ProjectService {
             File folder = new File(uploadDir);
             if (!folder.exists()) folder.mkdirs();
 
-            String filename = System.currentTimeMillis() + "-" + file.getOriginalFilename();
+            String filename = file.getOriginalFilename();
             Path filePath = Paths.get(uploadDir + filename);
 
             file.transferTo(filePath.toFile());
@@ -125,7 +125,7 @@ public class ProjectService {
             File folder = new File(uploadDir);
             if (!folder.exists()) folder.mkdirs();
 
-            String filename = System.currentTimeMillis() + "-" + file.getOriginalFilename();
+            String filename = file.getOriginalFilename();
             Path filePath = Paths.get(uploadDir + filename);
             file.transferTo(filePath.toFile());
 
