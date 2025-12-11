@@ -1,0 +1,36 @@
+version: '3.9'
+
+services:
+  db:
+    image: postgres:16
+    container_name: garden_postgres
+    restart: always
+    environment:
+      POSTGRES_DB: er-garden
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: tinbabaa
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - garden_network
+
+  backend:
+    build: .
+    container_name: garden_backend
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - "8082:8082"
+    depends_on:
+      - db
+    networks:
+      - garden_network
+
+networks:
+  garden_network:
+
+volumes:
+  postgres_data:
