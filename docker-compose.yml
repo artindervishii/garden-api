@@ -26,6 +26,8 @@ services:
       - "8082:8082"
     depends_on:
       - db
+    volumes:
+      - ./uploads:/app/uploads  # Mounting uploads folder from host to container
     networks:
       - garden_network
 
