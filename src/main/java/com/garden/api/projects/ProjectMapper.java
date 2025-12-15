@@ -30,6 +30,13 @@ public class ProjectMapper {
         project.setDescription(request.getDescription());
         project.setPrice(request.getPrice());
         project.setStatus(request.getStatus());
+        // Only update before/after images if they are provided in the request
+        if (request.getBeforeImage() != null) {
+            project.setBeforeImage(request.getBeforeImage());
+        }
+        if (request.getAfterImage() != null) {
+            project.setAfterImage(request.getAfterImage());
+        }
         List<Category> categories = mapCategoriesByIds(request.getCategoryIds());
         project.setCategories(categories);
     }
@@ -52,6 +59,8 @@ public class ProjectMapper {
                 .title(project.getTitle())
                 .images(project.getImages())
                 .videos(project.getVideos())
+                .beforeImage(project.getBeforeImage())
+                .afterImage(project.getAfterImage())
                 .description(project.getDescription())
                 .categoriesName(mapToCategories(project.getCategories()))
                 .clientName(project.getClient() != null ? project.getClient().getName() : null)

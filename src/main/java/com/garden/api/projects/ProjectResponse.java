@@ -16,6 +16,8 @@ public class ProjectResponse {
     List<String> categoriesName;
     List<String> images;
     List<String> videos;
+    String beforeImage;
+    String afterImage;
     String clientName;
     BigDecimal price;
     ProjectStatus status;

@@ -22,6 +22,10 @@ public class ProjectRequest {
 
     private List<String> videos;
 
+    private String beforeImage;
+
+    private String afterImage;
+
     @Column(columnDefinition = "TEXT")
     private String description;
 

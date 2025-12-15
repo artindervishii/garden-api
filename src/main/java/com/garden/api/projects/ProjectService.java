@@ -183,6 +183,140 @@ public class ProjectService {
         }
     }
 
+    @Transactional
+    public String uploadBeforeImage(Long projectId, MultipartFile file) {
+        String baseUrl = "https://api.garten-er.de";
+
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new ResourceNotFoundException("Project with ID " + projectId + " not found"));
+
+        try {
+            String uploadDir = System.getProperty("user.dir") + "/uploads/projects/images/";
+            File folder = new File(uploadDir);
+            if (!folder.exists()) folder.mkdirs();
+
+            String originalFilename = file.getOriginalFilename();
+            String filename = System.currentTimeMillis() + "-before-" + originalFilename;
+            Path filePath = Paths.get(uploadDir + filename);
+
+            // Delete old before image if exists
+            if (project.getBeforeImage() != null && !project.getBeforeImage().isEmpty()) {
+                try {
+                    String oldFilename = project.getBeforeImage().substring(project.getBeforeImage().lastIndexOf("/") + 1);
+                    Path oldFilePath = Paths.get(uploadDir + oldFilename);
+                    if (Files.exists(oldFilePath)) {
+                        Files.delete(oldFilePath);
+                    }
+                } catch (IOException e) {
+                    System.err.println("Failed to delete old before image: " + e.getMessage());
+                }
+            }
+
+            file.transferTo(filePath.toFile());
+
+            String url = baseUrl + "/images/projects/" + filename;
+            project.setBeforeImage(url);
+            projectRepository.save(project);
+
+            System.out.println("Saved before image to: " + filePath.toAbsolutePath());
+            return url;
+
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to upload before image", e);
+        }
+    }
+
+    @Transactional
+    public String uploadAfterImage(Long projectId, MultipartFile file) {
+        String baseUrl = "https://api.garten-er.de";
+
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new ResourceNotFoundException("Project with ID " + projectId + " not found"));
+
+        try {
+            String uploadDir = System.getProperty("user.dir") + "/uploads/projects/images/";
+            File folder = new File(uploadDir);
+            if (!folder.exists()) folder.mkdirs();
+
+            String originalFilename = file.getOriginalFilename();
+            String filename = System.currentTimeMillis() + "-after-" + originalFilename;
+            Path filePath = Paths.get(uploadDir + filename);
+
+            // Delete old after image if exists
+            if (project.getAfterImage() != null && !project.getAfterImage().isEmpty()) {
+                try {
+                    String oldFilename = project.getAfterImage().substring(project.getAfterImage().lastIndexOf("/") + 1);
+                    Path oldFilePath = Paths.get(uploadDir + oldFilename);
+                    if (Files.exists(oldFilePath)) {
+                        Files.delete(oldFilePath);
+                    }
+                } catch (IOException e) {
+                    System.err.println("Failed to delete old after image: " + e.getMessage());
+                }
+            }
+
+            file.transferTo(filePath.toFile());
+
+            String url = baseUrl + "/images/projects/" + filename;
+            project.setAfterImage(url);
+            projectRepository.save(project);
+
+            System.out.println("Saved after image to: " + filePath.toAbsolutePath());
+            return url;
+
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to upload after image", e);
+        }
+    }
+
+    @Transactional
+    public void deleteBeforeImage(Long projectId) {
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new ResourceNotFoundException("Project with ID " + projectId + " not found"));
+
+        if (project.getBeforeImage() != null && !project.getBeforeImage().isEmpty()) {
+            try {
+                String filename = project.getBeforeImage().substring(project.getBeforeImage().lastIndexOf("/") + 1);
+                String uploadDir = System.getProperty("user.dir") + "/uploads/projects/images/";
+                Path filePath = Paths.get(uploadDir + filename);
+
+                if (Files.exists(filePath)) {
+                    Files.delete(filePath);
+                    System.out.println("Deleted before image file: " + filePath.toAbsolutePath());
+                }
+            } catch (IOException e) {
+                System.err.println("Failed to delete before image file: " + e.getMessage());
+            }
+        }
+
+        project.setBeforeImage(null);
+        projectRepository.save(project);
+    }
+
+    @Transactional
+    public void deleteAfterImage(Long projectId) {
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new ResourceNotFoundException("Project with ID " + projectId + " not found"));
+
+        if (project.getAfterImage() != null && !project.getAfterImage().isEmpty()) {
+            try {
+                String filename = project.getAfterImage().substring(project.getAfterImage().lastIndexOf("/") + 1);
+                String uploadDir = System.getProperty("user.dir") + "/uploads/projects/images/";
+                Path filePath = Paths.get(uploadDir + filename);
+
+                if (Files.exists(filePath)) {
+                    Files.delete(filePath);
+                    System.out.println("Deleted after image file: " + filePath.toAbsolutePath());
+                }
+            } catch (IOException e) {
+                System.err.println("Failed to delete after image file: " + e.getMessage());
+            }
+        }
+
+        project.setAfterImage(null);
+        projectRepository.save(project);
+    }
+
     public List<Project> findFeaturedProjects() {
         return projectRepository.findByStatusAndDisplayOrderIsNotNullOrderByDisplayOrderAsc(ProjectStatus.Completed);
     }

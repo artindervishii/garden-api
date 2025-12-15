@@ -120,4 +120,36 @@ public class ProjectController {
         }
     }
 
+    @PostMapping(BASE_PATH_V1 + "/{projectId}/upload-before-image")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<String> uploadBeforeImage(
+            @PathVariable Long projectId,
+            @RequestParam("file") MultipartFile file) {
+        String url = projectService.uploadBeforeImage(projectId, file);
+        return ResponseEntity.ok(url);
+    }
+
+    @PostMapping(BASE_PATH_V1 + "/{projectId}/upload-after-image")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<String> uploadAfterImage(
+            @PathVariable Long projectId,
+            @RequestParam("file") MultipartFile file) {
+        String url = projectService.uploadAfterImage(projectId, file);
+        return ResponseEntity.ok(url);
+    }
+
+    @DeleteMapping(BASE_PATH_V1 + "/{projectId}/before-image")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> deleteBeforeImage(@PathVariable Long projectId) {
+        projectService.deleteBeforeImage(projectId);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping(BASE_PATH_V1 + "/{projectId}/after-image")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> deleteAfterImage(@PathVariable Long projectId) {
+        projectService.deleteAfterImage(projectId);
+        return ResponseEntity.ok().build();
+    }
+
 }

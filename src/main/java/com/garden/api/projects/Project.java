@@ -40,6 +40,12 @@ public class Project extends AbstractEntity {
     @Column(name = "video_url")
     private List<String> videos = new ArrayList<>();
 
+    @Column(name = "before_image_url")
+    private String beforeImage;
+
+    @Column(name = "after_image_url")
+    private String afterImage;
+
     @Column(columnDefinition = "TEXT")
     private String description;
 
