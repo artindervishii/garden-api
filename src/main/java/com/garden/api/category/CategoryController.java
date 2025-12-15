@@ -60,6 +60,7 @@ public class CategoryController {
     }
 
     @PostMapping(BASE_PATH_V1 + "/{categoryId}/upload-image")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> uploadCategoryImage(
             @PathVariable Long categoryId,
             @RequestParam("file") MultipartFile file) {
@@ -67,5 +68,11 @@ public class CategoryController {
         return ResponseEntity.ok(url);
     }
 
+    @DeleteMapping(BASE_PATH_V1 + "/{categoryId}/image")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> deleteCategoryImage(@PathVariable Long categoryId) {
+        categoryService.deleteCategoryImage(categoryId);
+        return ResponseEntity.ok().build();
+    }
 
 }

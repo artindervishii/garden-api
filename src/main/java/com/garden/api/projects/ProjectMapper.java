@@ -30,7 +30,6 @@ public class ProjectMapper {
         project.setDescription(request.getDescription());
         project.setPrice(request.getPrice());
         project.setStatus(request.getStatus());
-        // Only update before/after images if they are provided in the request
         if (request.getBeforeImage() != null) {
             project.setBeforeImage(request.getBeforeImage());
         }

@@ -2,6 +2,7 @@ package com.garden.api.projects;
 
 import com.garden.api.clients.Client;
 import com.garden.api.clients.ClientService;
+import com.garden.api.common.ImageOptimizationService;
 import com.garden.api.exceptions.ResourceNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -17,6 +18,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
@@ -26,6 +28,7 @@ public class ProjectService {
     private final ProjectRepository projectRepository;
     private final ProjectMapper mapper;
     private final ClientService clientService;
+    private final ImageOptimizationService imageOptimizationService;
 
     public Long addProject(ProjectRequest projectRequest) {
         Project project = mapper.map(projectRequest);
@@ -89,25 +92,22 @@ public class ProjectService {
 
         try {
             String uploadDir = System.getProperty("user.dir") + "/uploads/projects/images/";
-            File folder = new File(uploadDir);
-            if (!folder.exists()) folder.mkdirs();
-
-            String filename = file.getOriginalFilename();
-            Path filePath = Paths.get(uploadDir + filename);
-
-            file.transferTo(filePath.toFile());
-
-            String url = baseUrl + "/images/projects/" + filename;
+            
+            String originalFilename = file.getOriginalFilename();
+            String baseFilename = System.currentTimeMillis() + "-" + 
+                    (originalFilename != null ? originalFilename.replaceAll("[^a-zA-Z0-9.-]", "_") : "image");
+            
+            Map<String, String> optimizedUrls = imageOptimizationService.optimizeImage(file, uploadDir, baseFilename, "projects");
+            
+            String url = baseUrl + optimizedUrls.get("original");
 
             project.getImages().add(url);
             projectRepository.save(project);
 
-            System.out.println("Saved file to: " + filePath.toAbsolutePath());
-
             return url;
 
         } catch (IOException e) {
-            throw new RuntimeException("Failed to upload image", e);
+            throw new RuntimeException("Failed to upload and optimize image", e);
         }
     }
 
@@ -115,7 +115,6 @@ public class ProjectService {
     public String uploadProjectVideo(Long projectId, MultipartFile file) {
 
         String baseUrl = "https://api.garten-er.de";
-        //test
 
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new ResourceNotFoundException("Project with ID " + projectId + " not found"));
@@ -192,18 +191,11 @@ public class ProjectService {
 
         try {
             String uploadDir = System.getProperty("user.dir") + "/uploads/projects/images/";
-            File folder = new File(uploadDir);
-            if (!folder.exists()) folder.mkdirs();
-
-            String originalFilename = file.getOriginalFilename();
-            String filename = System.currentTimeMillis() + "-before-" + originalFilename;
-            Path filePath = Paths.get(uploadDir + filename);
-
-            // Delete old before image if exists
+            
             if (project.getBeforeImage() != null && !project.getBeforeImage().isEmpty()) {
                 try {
                     String oldFilename = project.getBeforeImage().substring(project.getBeforeImage().lastIndexOf("/") + 1);
-                    Path oldFilePath = Paths.get(uploadDir + oldFilename);
+                    Path oldFilePath = Paths.get(uploadDir + "original/" + oldFilename);
                     if (Files.exists(oldFilePath)) {
                         Files.delete(oldFilePath);
                     }
@@ -212,17 +204,20 @@ public class ProjectService {
                 }
             }
 
-            file.transferTo(filePath.toFile());
-
-            String url = baseUrl + "/images/projects/" + filename;
+            String originalFilename = file.getOriginalFilename();
+            String baseFilename = System.currentTimeMillis() + "-before-" + 
+                    (originalFilename != null ? originalFilename.replaceAll("[^a-zA-Z0-9.-]", "_") : "image");
+            
+            Map<String, String> optimizedUrls = imageOptimizationService.optimizeImage(file, uploadDir, baseFilename, "projects");
+            String url = baseUrl + optimizedUrls.get("original");
+            
             project.setBeforeImage(url);
             projectRepository.save(project);
 
-            System.out.println("Saved before image to: " + filePath.toAbsolutePath());
             return url;
 
         } catch (IOException e) {
-            throw new RuntimeException("Failed to upload before image", e);
+            throw new RuntimeException("Failed to upload and optimize before image", e);
         }
     }
 
@@ -235,18 +230,11 @@ public class ProjectService {
 
         try {
             String uploadDir = System.getProperty("user.dir") + "/uploads/projects/images/";
-            File folder = new File(uploadDir);
-            if (!folder.exists()) folder.mkdirs();
-
-            String originalFilename = file.getOriginalFilename();
-            String filename = System.currentTimeMillis() + "-after-" + originalFilename;
-            Path filePath = Paths.get(uploadDir + filename);
-
-            // Delete old after image if exists
+            
             if (project.getAfterImage() != null && !project.getAfterImage().isEmpty()) {
                 try {
                     String oldFilename = project.getAfterImage().substring(project.getAfterImage().lastIndexOf("/") + 1);
-                    Path oldFilePath = Paths.get(uploadDir + oldFilename);
+                    Path oldFilePath = Paths.get(uploadDir + "original/" + oldFilename);
                     if (Files.exists(oldFilePath)) {
                         Files.delete(oldFilePath);
                     }
@@ -254,18 +242,21 @@ public class ProjectService {
                     System.err.println("Failed to delete old after image: " + e.getMessage());
                 }
             }
+            String originalFilename = file.getOriginalFilename();
+            String baseFilename = System.currentTimeMillis() + "-after-" + 
+                    (originalFilename != null ? originalFilename.replaceAll("[^a-zA-Z0-9.-]", "_") : "image");
+            Map<String, String> optimizedUrls = imageOptimizationService.optimizeImage(file, uploadDir, baseFilename, "projects");
 
-            file.transferTo(filePath.toFile());
-
-            String url = baseUrl + "/images/projects/" + filename;
+            String url = baseUrl + optimizedUrls.get("original");
+            
             project.setAfterImage(url);
             projectRepository.save(project);
 
-            System.out.println("Saved after image to: " + filePath.toAbsolutePath());
+            System.out.println("Saved optimized after image: " + url);
             return url;
 
         } catch (IOException e) {
-            throw new RuntimeException("Failed to upload after image", e);
+            throw new RuntimeException("Failed to upload and optimize after image", e);
         }
     }
 

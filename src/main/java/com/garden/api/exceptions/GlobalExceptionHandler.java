@@ -320,6 +320,24 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.PAYLOAD_TOO_LARGE);
     }
 
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<ApiError> handleIllegalState(IllegalStateException ex, HttpServletRequest request) {
+        logger.error("Illegal state error: {}", ex.getMessage(), ex);
+
+        String errorMessage = "Image processing error: " + ex.getMessage();
+        if (ex.getMessage() != null && ex.getMessage().contains("size is not set")) {
+            errorMessage = "Image processing error: Invalid image dimensions.";
+        }
+
+        ApiError error = new ApiError(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                request.getRequestURI(),
+                errorMessage,
+                LocalDateTime.now().toString()
+        );
+        return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleGenericException(Exception exception, HttpServletRequest request) {
         logger.error("An unexpected error occurred: {}", exception.getMessage(), exception);

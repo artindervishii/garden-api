@@ -36,4 +36,8 @@ build/
 ### VS Code ###
 .vscode/
 
+### Uploads ###
+uploads/
+# Note: Directories are created automatically by DirectoryInitializer on startup
+# Only ignore the contents, not the directory structure creation code
 
