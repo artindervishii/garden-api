@@ -103,27 +103,35 @@ public class ImageOptimizationService {
         
         Map<String, String> responsiveUrls = new HashMap<>();
         for (int width : RESPONSIVE_SIZES) {
+            BufferedImage imageToSave;
+            
+            // If requested width is smaller than or equal to original, resize
+            // If requested width is larger than original, use original (no upscaling)
             if (width <= originalWidth) {
-                BufferedImage resized = Thumbnails.of(originalImage)
+                imageToSave = Thumbnails.of(originalImage)
                         .width(width)
                         .keepAspectRatio(true)
                         .asBufferedImage();
-                
-                String sizeDir = optimizedDir + width + "w/";
-                new File(sizeDir).mkdirs();
-                String jpegPath = sizeDir + baseFilename + ".jpg";
-                saveOptimizedImage(resized, jpegPath, "jpg", JPEG_QUALITY);
-                
-                // Generate WebP version only if supported
-                if (WEBP_SUPPORTED) {
-                    try {
-                        String webpSizeDir = webpDir + width + "w/";
-                        new File(webpSizeDir).mkdirs();
-                        String webpSizePath = webpSizeDir + baseFilename + ".webp";
-                        saveOptimizedImage(resized, webpSizePath, "webp", WEBP_QUALITY);
-                    } catch (Exception e) {
-                        // Skip WebP generation for this size if it fails
-                    }
+            } else {
+                // Use original image for sizes larger than the original
+                // This ensures the file exists and prevents 500 errors
+                imageToSave = originalImage;
+            }
+            
+            String sizeDir = optimizedDir + width + "w/";
+            new File(sizeDir).mkdirs();
+            String jpegPath = sizeDir + baseFilename + ".jpg";
+            saveOptimizedImage(imageToSave, jpegPath, "jpg", JPEG_QUALITY);
+            
+            // Generate WebP version only if supported
+            if (WEBP_SUPPORTED) {
+                try {
+                    String webpSizeDir = webpDir + width + "w/";
+                    new File(webpSizeDir).mkdirs();
+                    String webpSizePath = webpSizeDir + baseFilename + ".webp";
+                    saveOptimizedImage(imageToSave, webpSizePath, "webp", WEBP_QUALITY);
+                } catch (Exception e) {
+                    // Skip WebP generation for this size if it fails
                 }
             }
         }

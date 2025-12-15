@@ -25,6 +25,7 @@ import org.springframework.web.method.annotation.HandlerMethodValidationExceptio
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
+import org.springframework.web.servlet.NoHandlerFoundException;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -364,5 +365,20 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(NoHandlerFoundException.class)
+    public ResponseEntity<ApiError> handleNoHandlerFound(NoHandlerFoundException ex, HttpServletRequest request) {
+        // Only log if it's not an image request (to avoid spam)
+        if (!request.getRequestURI().contains("/images/")) {
+            logger.warn("No handler found for: {}", request.getRequestURI());
+        }
+
+        ApiError error = new ApiError(
+                HttpStatus.NOT_FOUND.value(),
+                request.getRequestURI(),
+                "Resource not found",
+                LocalDateTime.now().toString()
+        );
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
 
 }
